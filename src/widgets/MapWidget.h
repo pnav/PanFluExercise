@@ -28,11 +28,7 @@ class MapWidget : public QGLWidget
 
         virtual void setDataSet(boost::shared_ptr<EpidemicDataSet> dataSet);
         virtual void setTime(int time);
-
-#if USE_DISPLAYCLUSTER
-        void exportSVGToDisplayCluster();
-#endif
-
+        
     protected:
 
         // indexing used to identify this map

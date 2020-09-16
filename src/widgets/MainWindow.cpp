@@ -62,18 +62,6 @@ MainWindow::MainWindow()
     loadParametersAction->setStatusTip("Load parameters");
     connect(loadParametersAction, SIGNAL(triggered()), this, SLOT(loadParameters()));
 
-#if USE_DISPLAYCLUSTER
-    // connect to DisplayCluster action
-    QAction * connectToDisplayClusterAction = new QAction("Connect to DisplayCluster", this);
-    connectToDisplayClusterAction->setStatusTip("Connect to DisplayCluster");
-    connect(connectToDisplayClusterAction, SIGNAL(triggered()), this, SLOT(connectToDisplayCluster()));
-
-    // disconnect from DisplayCluster action
-    QAction * disconnectFromDisplayClusterAction = new QAction("Disconnect from DisplayCluster", this);
-    disconnectFromDisplayClusterAction->setStatusTip("Disconnect from DisplayCluster");
-    connect(disconnectFromDisplayClusterAction, SIGNAL(triggered()), this, SLOT(disconnectFromDisplayCluster()));
-#endif
-
     // add actions to menus
     fileMenu->addAction(newSimulationAction);
     // fileMenu->addAction(openDataSetAction);
@@ -81,11 +69,6 @@ MainWindow::MainWindow()
     fileMenu->addAction(saveEpidemicDataCsvAction);
     fileMenu->addAction(loadInitialCasesAction);
     fileMenu->addAction(loadParametersAction);
-
-#if USE_DISPLAYCLUSTER
-    fileMenu->addAction(connectToDisplayClusterAction);
-    fileMenu->addAction(disconnectFromDisplayClusterAction);
-#endif
 
     // add actions to toolbar
     toolbar->addAction(newSimulationAction);
@@ -228,47 +211,7 @@ MainWindow::MainWindow()
     // batch mode operations
     if(g_batchMode == true)
     {
-        put_flog(LOG_INFO, "starting batch mode");
 
-        // activate other map view
-        tabWidget->setCurrentIndex(1);
-
-        newSimulation();
-
-        if(g_batchInitialCasesFilename.empty() != true)
-        {
-            initialCasesWidget_->loadXmlData(g_batchInitialCasesFilename);
-        }
-
-        if(g_batchParametersFilename.empty() != true)
-        {
-            g_parameters.loadXmlData(g_batchParametersFilename);
-
-            // create a new ParametersWidget to reload these values in the UI
-            parametersDockWidget_->setWidget(new ParametersWidget());
-        }
-
-        // wait for any GUI events to be processed
-        // ignore: QCoreApplication::processEvents();
-
-        for(unsigned int i=0; i<g_batchNumTimesteps; i++)
-        {
-            nextTimestep();
-
-            // wait for any GUI events to be processed
-            // ignore: QCoreApplication::processEvents();
-        }
-
-        std::string out = dataSet_->getVariableStratified2NodeVsTime(g_batchOutputVariable);
-
-        {
-            std::ofstream ofs(g_batchOutputFilename.c_str());
-            ofs << out;
-        }
-
-        put_flog(LOG_INFO, "done with batch mode");
-
-        exit(0);
     }
 }
 
@@ -555,34 +498,4 @@ void MainWindow::resetTimeSlider()
     }
 }
 
-#if USE_DISPLAYCLUSTER
-void MainWindow::connectToDisplayCluster()
-{
-    bool ok = false;
 
-    QString hostname = QInputDialog::getText(this, "Connect to DisplayCluster", "Hostname:", QLineEdit::Normal, "localhost", &ok);
-
-    if(ok == true && hostname.isEmpty() != true)
-    {
-        g_dcSocket = dcStreamConnect(hostname.toStdString().c_str());
-
-        if(g_dcSocket == NULL)
-        {
-            QMessageBox messageBox;
-            messageBox.setText("Could not connect to DisplayCluster.");
-            messageBox.exec();
-        }
-    }
-}
-#endif
-
-#if USE_DISPLAYCLUSTER
-void MainWindow::disconnectFromDisplayCluster()
-{
-    if(g_dcSocket != NULL)
-    {
-        dcStreamDisconnect(g_dcSocket);
-        g_dcSocket = NULL;
-    }
-}
-#endif

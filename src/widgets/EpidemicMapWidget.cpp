@@ -34,9 +34,7 @@ void EpidemicMapWidget::setTime(int time)
     // force redraw
     update();
 
-#if USE_DISPLAYCLUSTER
-    exportSVGToDisplayCluster();
-#endif
+
 }
 
 void EpidemicMapWidget::render(QPainter * painter)

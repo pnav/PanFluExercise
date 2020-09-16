@@ -60,10 +60,6 @@ void IliMapWidget::setTime(int time)
 
     // force redraw
     update();
-
-#if USE_DISPLAYCLUSTER
-    exportSVGToDisplayCluster();
-#endif
 }
 
 void IliMapWidget::render(QPainter * painter)

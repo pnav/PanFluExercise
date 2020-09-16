@@ -257,39 +257,6 @@ void TimelineWidget::render(QPainter* painter)
     }
 }
 
-void TimelineWidget::exportSVGToDisplayCluster()
-{
-#if USE_DISPLAYCLUSTER
-    if(g_dcSocket != NULL && svgTmpFile_.open())
-    {
-        QSvgGenerator generator;
-        generator.setFileName(svgTmpFile_.fileName());
-        generator.setResolution(90);
-        QSize size(768, 70);
-        QRect rect(QPoint(0,0), size);
-
-        QPainter painter;
-        painter.begin(&generator);
-
-        painter.setWindow(rect);
-        painter.setViewport(rect);
-
-        // draw a white background
-        painter.setBrush(QColor(255,255,255));
-        painter.setPen(QColor(255,255,255));
-        painter.drawRect(rect);
-
-        render(&painter);
-
-        painter.end();
-
-        put_flog(LOG_DEBUG, "wrote %s", svgTmpFile_.fileName().toStdString().c_str());
-
-        // now, send it to DisplayCluster
-        sendSVGToDisplayCluster((svgTmpFile_.fileName()).toStdString(), (QString("ExerciseTimeline.svg")).toStdString());
-    }
-#endif
-}
 
 void TimelineWidget::setTime(int time)
 {

@@ -9,10 +9,6 @@
 #include <vtkAxis.h>
 #include <vtkChartLegend.h>
 
-#if USE_DISPLAYCLUSTER
-    #include "dcStream.h"
-#endif
-
 int ChartWidget::numChartWidgets_ = 0;
 
 ChartWidget::ChartWidget()
@@ -157,27 +153,4 @@ void ChartWidget::setSVGExportAspectRatio(float value)
     svgExporter_->TextAsPathOn();
 }
 
-#if USE_DISPLAYCLUSTER
-void ChartWidget::exportSVGToDisplayCluster()
-{
-    if(g_dcSocket != NULL && svgTmpFile_.open())
-    {
-        // move the renderer to the SVG render window
-        view_->GetRenderWindow()->RemoveRenderer(view_->GetRenderer());
-        svgRenderWindow_->AddRenderer(view_->GetRenderer());
 
-        // write the SVG file
-        svgExporter_->SetFilePrefix(svgTmpFile_.fileName().toStdString().c_str());
-        svgExporter_->Write();
-
-        put_flog(LOG_DEBUG, "wrote %s", svgTmpFile_.fileName().toStdString().c_str());
-
-        // move the renderer back to the regular render window
-        svgRenderWindow_->RemoveRenderer(view_->GetRenderer());
-        view_->GetRenderWindow()->AddRenderer(view_->GetRenderer());
-
-        // now, send it to DisplayCluster
-        sendSVGToDisplayCluster((svgTmpFile_.fileName() + ".svg").toStdString(), (QString("ExerciseChart-") + QString::number(index_) + ".svg").toStdString());
-    }
-}
-#endif

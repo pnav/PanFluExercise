@@ -56,10 +56,6 @@ class MainWindow : public QMainWindow {
         void loadParameters();
         void resetTimeSlider();
 
-#if USE_DISPLAYCLUSTER
-        void connectToDisplayCluster();
-        void disconnectFromDisplayCluster();
-#endif
 };
 
 #endif

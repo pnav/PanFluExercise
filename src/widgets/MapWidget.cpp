@@ -75,38 +75,6 @@ void MapWidget::setTime(int time)
     time_ = time;
 }
 
-#if USE_DISPLAYCLUSTER
-void MapWidget::exportSVGToDisplayCluster()
-{
-    if(g_dcSocket != NULL && svgTmpFile_.open())
-    {
-        QSvgGenerator generator;
-        generator.setFileName(svgTmpFile_.fileName());
-        generator.setResolution(90);
-        generator.setSize(QSize(1400, 1200));
-        generator.setViewBox(viewRect_);
-
-        QPainter painter;
-        painter.begin(&generator);
-
-        // set logical coordinates of the render window
-        painter.setWindow(viewRect_.toRect());
-
-        // draw a black background
-        painter.setBrush(QBrush(QColor::fromRgbF(0,0,0,1)));
-        painter.drawRect(QRect(QPoint(-107,37), QPoint(-93,20)));
-
-        renderAll(&painter, false);
-
-        painter.end();
-
-        put_flog(LOG_DEBUG, "wrote %s", svgTmpFile_.fileName().toStdString().c_str());
-
-        // now, send it to DisplayCluster
-        sendSVGToDisplayCluster((svgTmpFile_.fileName()).toStdString(), (QString("ExerciseMap-") + QString::number(index_) + ".svg").toStdString());
-    }
-}
-#endif
 
 void MapWidget::renderAll(QPainter * painter, bool uiRender)
 {

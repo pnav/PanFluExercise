@@ -73,9 +73,6 @@ void StockpileMapWidget::setTime(int time)
     // force redraw
     update();
 
-#if USE_DISPLAYCLUSTER
-    exportSVGToDisplayCluster();
-#endif
 }
 
 void StockpileMapWidget::setType(STOCKPILE_TYPE type)

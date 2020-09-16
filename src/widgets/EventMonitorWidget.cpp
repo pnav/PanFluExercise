@@ -37,53 +37,10 @@ EventMonitorWidget::~EventMonitorWidget()
     }
 }
 
-#if USE_DISPLAYCLUSTER
-void EventMonitorWidget::exportSVGToDisplayCluster()
-{
-    if(g_dcSocket != NULL && svgTmpFile_.open())
-    {
-        QSize size(1024, 540);
-        QRect rect(QPoint(0,0), size);
-
-        QSvgGenerator svg;
-        svg.setFileName(svgTmpFile_.fileName() + ".svg");
-        svg.setSize(size);
-        svg.setResolution(90);
-
-        QTextDocument * doc = messagesWidget_.document()->clone();
-
-        QPainter painter(&svg);
-
-        // background
-        painter.setBrush(QColor(255,255,255));
-        painter.setPen(QColor(255,255,255));
-
-        painter.drawRect(rect);
-
-        doc->documentLayout()->setPaintDevice(&svg);
-
-        painter.setViewport(rect);
-        doc->setPageSize(size);
-
-        doc->drawContents(&painter);
-
-        painter.end();
-
-        put_flog(LOG_DEBUG, "wrote %s", svgTmpFile_.fileName().toStdString().c_str());
-
-        // now, send it to DisplayCluster
-        sendSVGToDisplayCluster((svgTmpFile_.fileName()).toStdString() + ".svg", (QString("ExerciseEventMonitor.svg")).toStdString());
-    }
-}
-#endif
 
 void EventMonitorWidget::clearMessages()
 {
     messagesWidget_.clear();
-
-#if USE_DISPLAYCLUSTER
-    exportSVGToDisplayCluster();
-#endif
 }
 
 void EventMonitorWidget::insertEventMessage(boost::shared_ptr<EventMessage> message)
@@ -94,8 +51,4 @@ void EventMonitorWidget::insertEventMessage(boost::shared_ptr<EventMessage> mess
     messagesWidget_.setTextCursor(cursor);
 
     messagesWidget_.insertHtml(message->messageText.c_str() + QString("<br />"));
-
-#if USE_DISPLAYCLUSTER
-    exportSVGToDisplayCluster();
-#endif
 }
