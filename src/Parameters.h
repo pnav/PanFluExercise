@@ -2,143 +2,131 @@
 #define PARAMETERS_H
 
 #include <boost/shared_ptr.hpp>
-#include <QtGui>
 
 class PriorityGroup;
 class Npi;
 class PriorityGroupSelections;
 
-class Parameters : public QObject
+class Parameters 
 {
-    Q_OBJECT
+public:
 
-    public:
+    Parameters();
 
-        Parameters();
+    double getR0();
+    double getBetaScale();
+    double getTau();
+    double getKappa();
+    double getChi();
+    double getGamma();
+    double getNu(int index);
+    double getAntiviralEffectiveness();
+    double getAntiviralAdherence();
+    double getAntiviralCapacity();
+    double getVaccineEffectiveness();
+    int getVaccineLatencyPeriod();
+    double getVaccineAdherence();
+    double getVaccineCapacity();
 
-        double getR0();
-        double getBetaScale();
-        double getTau();
-        double getKappa();
-        double getChi();
-        double getGamma();
-        double getNu(int index);
-        double getAntiviralEffectiveness();
-        double getAntiviralAdherence();
-        double getAntiviralCapacity();
-        double getVaccineEffectiveness();
-        int getVaccineLatencyPeriod();
-        double getVaccineAdherence();
-        double getVaccineCapacity();
+    // for parameters not exposed through ParametersWidget
+    std::vector<boost::shared_ptr<PriorityGroup> > getPriorityGroups();
 
-        // for parameters not exposed through ParametersWidget
-        std::vector<boost::shared_ptr<PriorityGroup> > getPriorityGroups();
+    std::vector<boost::shared_ptr<Npi> > getNpis();
 
-        std::vector<boost::shared_ptr<Npi> > getNpis();
+    boost::shared_ptr<PriorityGroupSelections> getAntiviralPriorityGroupSelections();
+    boost::shared_ptr<PriorityGroupSelections> getVaccinePriorityGroupSelections();
 
-        boost::shared_ptr<PriorityGroupSelections> getAntiviralPriorityGroupSelections();
-        boost::shared_ptr<PriorityGroupSelections> getVaccinePriorityGroupSelections();
+    void loadXmlData(const std::string &filename);
 
-    signals:
+    void setR0(double value);
+    void setBetaScale(double value);
+    void setTau(double value);
+    void setKappa(double value);
+    void setChi(double value);
+    void setGamma(double value);
+    void setNu(double value);
+    void setNu(std::vector<double> values);
+    void setAntiviralEffectiveness(double value);
+    void setAntiviralAdherence(double value);
+    void setAntiviralCapacity(double value);
+    void setVaccineEffectiveness(double value);
+    void setVaccineLatencyPeriod(int value);
+    void setVaccineAdherence(double value);
+    void setVaccineCapacity(double value);
 
-        // for parameters not exposed through ParametersWidget
-        void priorityGroupAdded(boost::shared_ptr<PriorityGroup> priorityGroup);
+    // for parameters not exposed through ParametersWidget
+    void addPriorityGroup(boost::shared_ptr<PriorityGroup> priorityGroup);
 
-        void npiAdded(boost::shared_ptr<Npi> npi);
+    void clearNpis();
+    void addNpi(boost::shared_ptr<Npi> npi);
 
-    public slots:
+    void setAntiviralPriorityGroupSelections(boost::shared_ptr<PriorityGroupSelections> priorityGroupSelections);
+    void setVaccinePriorityGroupSelections(boost::shared_ptr<PriorityGroupSelections> priorityGroupSelections);
 
-        void loadXmlData(const std::string &filename);
+private:
 
-        void setR0(double value);
-        void setBetaScale(double value);
-        void setTau(double value);
-        void setKappa(double value);
-        void setChi(double value);
-        void setGamma(double value);
-        void setNu(double value);
-        void setNu(std::vector<double> values);
-        void setAntiviralEffectiveness(double value);
-        void setAntiviralAdherence(double value);
-        void setAntiviralCapacity(double value);
-        void setVaccineEffectiveness(double value);
-        void setVaccineLatencyPeriod(int value);
-        void setVaccineAdherence(double value);
-        void setVaccineCapacity(double value);
+    // basic reproduction number
+    double R0_;
 
-        // for parameters not exposed through ParametersWidget
-        void addPriorityGroup(boost::shared_ptr<PriorityGroup> priorityGroup);
+    // scaling factor for beta (transmission rate given contact). beta = R0 / betaScale
+    double betaScale_;
 
-        void clearNpis();
-        void addNpi(boost::shared_ptr<Npi> npi);
+    // inverse of: exposed -> asymptomatic transition rate
+    // => average latency period
+    double tau_;
 
-        void setAntiviralPriorityGroupSelections(boost::shared_ptr<PriorityGroupSelections> priorityGroupSelections);
-        void setVaccinePriorityGroupSelections(boost::shared_ptr<PriorityGroupSelections> priorityGroupSelections);
+    // inverse of: asymptomatic -> treatable transition rate
+    // => average asymptomatic infectious period
+    double kappa_;
 
-    private:
+    // time spent before progressing from treatable to infectious
+    double chi_;
 
-        // basic reproduction number
-        double R0_;
+    // inverse of: asymptomatic, treatable, or infectious -> recovered transition rate
+    // => average total infectious period
+    double gamma_;
 
-        // scaling factor for beta (transmission rate given contact). beta = R0 / betaScale
-        double betaScale_;
+    // transform: asymptomatic, treatable, or infectious -> deceased transition rate
+    // => case fatality rate (CFR)
+    // todo: this should be age stratified
+    std::vector<double> nu_;
 
-        // inverse of: exposed -> asymptomatic transition rate
-        // => average latency period
-        double tau_;
+    // antiviral effectiveness
+    double antiviralEffectiveness_;
 
-        // inverse of: asymptomatic -> treatable transition rate
-        // => average asymptomatic infectious period
-        double kappa_;
+    // antiviral adherence
+    double antiviralAdherence_;
 
-        // time spent before progressing from treatable to infectious
-        double chi_;
+    // antiviral capacity (possible distributions per day as a fraction of total population)
+    double antiviralCapacity_;
 
-        // inverse of: asymptomatic, treatable, or infectious -> recovered transition rate
-        // => average total infectious period
-        double gamma_;
+    // vaccine effectiveness
+    double vaccineEffectiveness_;
 
-        // transform: asymptomatic, treatable, or infectious -> deceased transition rate
-        // => case fatality rate (CFR)
-        // todo: this should be age stratified
-        std::vector<double> nu_;
+    // vaccine latency period
+    int vaccineLatencyPeriod_;
 
-        // antiviral effectiveness
-        double antiviralEffectiveness_;
+    // vaccine adherence
+    double vaccineAdherence_;
 
-        // antiviral adherence
-        double antiviralAdherence_;
+    // vaccine capacity (possible distributions per day as a fraction of total population)
+    double vaccineCapacity_;
 
-        // antiviral capacity (possible distributions per day as a fraction of total population)
-        double antiviralCapacity_;
+    //////////////////////////////////////////////////////////////////
+    // the parameters below are not exposed through ParametersWidget!
+    //////////////////////////////////////////////////////////////////
 
-        // vaccine effectiveness
-        double vaccineEffectiveness_;
+    // priority groups
+    std::vector<boost::shared_ptr<PriorityGroup> > priorityGroups_;
 
-        // vaccine latency period
-        int vaccineLatencyPeriod_;
+    // NPIs
+    std::vector<boost::shared_ptr<Npi> > npis_;
 
-        // vaccine adherence
-        double vaccineAdherence_;
+    // antiviral priority group selections
+    boost::shared_ptr<PriorityGroupSelections> antiviralPriorityGroupSelections_;
 
-        // vaccine capacity (possible distributions per day as a fraction of total population)
-        double vaccineCapacity_;
-
-        //////////////////////////////////////////////////////////////////
-        // the parameters below are not exposed through ParametersWidget!
-        //////////////////////////////////////////////////////////////////
-
-        // priority groups
-        std::vector<boost::shared_ptr<PriorityGroup> > priorityGroups_;
-
-        // NPIs
-        std::vector<boost::shared_ptr<Npi> > npis_;
-
-        // antiviral priority group selections
-        boost::shared_ptr<PriorityGroupSelections> antiviralPriorityGroupSelections_;
-
-        // vaccine priority group selections
-        boost::shared_ptr<PriorityGroupSelections> vaccinePriorityGroupSelections_;
+    // vaccine priority group selections
+    boost::shared_ptr<PriorityGroupSelections> vaccinePriorityGroupSelections_;
 };
 
 // global parameters object

@@ -428,8 +428,6 @@ void Parameters::setVaccineCapacity(double value)
 void Parameters::addPriorityGroup(boost::shared_ptr<PriorityGroup> priorityGroup)
 {
     priorityGroups_.push_back(priorityGroup);
-
-    emit(priorityGroupAdded(priorityGroup));
 }
 
 void Parameters::clearNpis()
@@ -440,8 +438,6 @@ void Parameters::clearNpis()
 void Parameters::addNpi(boost::shared_ptr<Npi> npi)
 {
     npis_.push_back(npi);
-
-    emit(npiAdded(npi));
 }
 
 void Parameters::setAntiviralPriorityGroupSelections(boost::shared_ptr<PriorityGroupSelections> priorityGroupSelections)

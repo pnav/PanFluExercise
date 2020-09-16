@@ -1,12 +1,22 @@
 #include "main.h"
 #include "MainWindow.h"
 #include "log.h"
-#include <QtGui>
-#include <QtNetwork/QTcpSocket>
+#include <cstdlib>
 #include <vtkObject.h>
 #include <boost/program_options.hpp>
+#include <boost/shared_ptr.hpp>
 
-bool g_batchMode = false;
+#include "models/disease/StochasticSEATIRD.h"
+#include "Parameters.h"
+
+#define BATCH_TIMESTEPS 1
+#define BATCH_INITIAL_CASES_FILENAME 2
+#define BATCH_PARAM_FILENAME 4
+#define BATCH_OUTPUT_VAR 8
+#define BATCH_OUTPUT_FILENAME 16
+#define BATCH_ALL_PARAMS 31
+
+bool g_batchMode = true;
 int g_batchNumTimesteps = 240;
 std::string g_batchInitialCasesFilename;
 std::string g_batchParametersFilename;
@@ -16,21 +26,13 @@ std::string g_batchOutputFilename = "treatable.csv";
 MainWindow * g_mainWindow = NULL;
 std::string g_dataDirectory;
 
-#if USE_DISPLAYCLUSTER
-    DcSocket * g_dcSocket = NULL;
-#endif
-
 int main(int argc, char * argv[])
 {
-    // parse Qt commandline options first
-    QApplication * app = new QApplication(argc, argv);
-
     // declare the supported options
     boost::program_options::options_description programOptions("Allowed options");
 
     programOptions.add_options()
         ("help", "produce help message")
-        ("batch", "run in batch mode")
         ("batch-numtimesteps", boost::program_options::value<int>(), "limit batch run to <n> time steps")
         ("batch-initialcasesfilename", boost::program_options::value<std::string>(), "batch mode initial cases filename")
         ("batch-parametersfilename", boost::program_options::value<std::string>(), "batch mode parameters filename")
@@ -41,6 +43,7 @@ int main(int argc, char * argv[])
     boost::program_options::variables_map vm;
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, programOptions), vm);
     boost::program_options::notify(vm);
+    put_flog(LOG_INFO, "enabling batch mode");
 
     if(vm.count("help"))
     {
@@ -48,112 +51,106 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    if(vm.count("batch"))
-    {
-        put_flog(LOG_INFO, "enabling batch mode");
-
-        g_batchMode = true;
-    }
+    unsigned int params_found = 0;
 
     if(vm.count("batch-numtimesteps"))
     {
         g_batchNumTimesteps = vm["batch-numtimesteps"].as<int>();
         put_flog(LOG_INFO, "got batch num time steps %i", g_batchNumTimesteps);
+        params_found = params_found | BATCH_TIMESTEPS;
     }
 
     if(vm.count("batch-initialcasesfilename"))
     {
         g_batchInitialCasesFilename = vm["batch-initialcasesfilename"].as<std::string>();
         put_flog(LOG_INFO, "got batch initial cases filename %s", g_batchInitialCasesFilename.c_str());
+        params_found = params_found | BATCH_INITIAL_CASES_FILENAME;
     }
 
     if(vm.count("batch-parametersfilename"))
     {
         g_batchParametersFilename = vm["batch-parametersfilename"].as<std::string>();
         put_flog(LOG_INFO, "got batch parameters filename %s", g_batchParametersFilename.c_str());
+        params_found = params_found | BATCH_PARAM_FILENAME;
     }
 
     if(vm.count("batch-outputvariable"))
     {
         g_batchOutputVariable = vm["batch-outputvariable"].as<std::string>();
         put_flog(LOG_INFO, "got batch output variable %s", g_batchOutputVariable.c_str());
+        params_found = params_found | BATCH_OUTPUT_VAR;
     }
 
     if(vm.count("batch-outputfilename"))
     {
         g_batchOutputFilename = vm["batch-outputfilename"].as<std::string>();
         put_flog(LOG_INFO, "got batch output filename %s", g_batchOutputFilename.c_str());
+        params_found = params_found | BATCH_OUTPUT_FILENAME;
     }
 
     // end argument parsing
 
-    // get directory of application
-    QDir appDirectory = QDir(QCoreApplication::applicationDirPath());
+    if (params_found < BATCH_ALL_PARAMS)
+    {
+        if (!params_found & BATCH_TIMESTEPS) put_flog(LOG_FATAL, "missing batch-numtimesteps parameter");
+        if (!params_found & BATCH_INITIAL_CASES_FILENAME) put_flog(LOG_FATAL, "missing batch-initialcasesfilename parameter");
+        if (!params_found & BATCH_PARAM_FILENAME) put_flog(LOG_FATAL, "missing batch-parametersfilename parameter");
+        if (!params_found & BATCH_OUTPUT_VAR) put_flog(LOG_FATAL, "missing batch-outputvariable parameter");
+        if (!params_found & BATCH_OUTPUT_FILENAME) put_flog(LOG_FATAL, "missing batch-outputfilename parameter");
+        exit(1);
+    }
 
-    // and data directory
-    QDir dataDirectory = appDirectory;
-
-#ifdef __APPLE__
-    dataDirectory.cdUp();
-    dataDirectory.cd("Resources");
-    dataDirectory.cd("data");
-#else // WIN32 or Linux
-    dataDirectory.cdUp();
-    dataDirectory.cd("data");
-#endif
-
-    g_dataDirectory = dataDirectory.absolutePath().toStdString();
+    // assumes data directory is in a sister directory to the current executable    
+    g_dataDirectory = std::string(getenv("PWD"))
 
     put_flog(LOG_DEBUG, "data directory: %s", g_dataDirectory.c_str());
 
-    // disable VTK console messages
-    vtkObject::GlobalWarningDisplayOff();
+    put_flog(LOG_INFO, "starting batch mode");
 
-    g_mainWindow = new MainWindow();
+    // create a new simulation using the StochasticSEATIRD model
+    boost::shared_ptr<EpidemicSimulation> simulation(new StochasticSEATIRD());
 
-    // enter Qt event loop
-    app->exec();
+    initialCases_ = new InitialCases();
+    initialCases_->setDataSet(simulation);
 
-    delete g_mainWindow;
+    if(g_batchInitialCasesFilename.empty() != true)
+    {
+        initialCases_->loadXmlData(g_batchInitialCasesFilename);
+    }
+
+    if(g_batchParametersFilename.empty() != true)
+    {
+        // defined in Parameters.h/.cpp
+        g_parameters.loadXmlData(g_batchParametersFilename);
+    }
+
+    for(int i=0; i<g_batchNumTimesteps; i++)
+    {
+        if(i >= simulation->getNumTimes())
+        {
+            // if this is the first time simulated, set the initial cases
+            if(i == 1)
+            {
+                initialCases_->applyCases();
+            }
+
+            simulation->simulate();
+        }        
+    }
+
+    std::string out = simulation->getVariableStratified2NodeVsTime(g_batchOutputVariable);
+
+    {
+        std::ofstream ofs(g_batchOutputFilename.c_str());
+        ofs << out;
+    }
+
+    put_flog(LOG_INFO, "done with batch mode");
+
+    // clean up
+    delete initialCases_;
 
     return 0;
 }
 
-#if USE_DISPLAYCLUSTER
-bool sendSVGToDisplayCluster(std::string filename, std::string name)
-{
-    if(g_dcSocket == NULL || g_dcSocket->state() != QAbstractSocket::ConnectedState)
-    {
-        put_flog(LOG_ERROR, "error sending SVG stream, socket not connected");
 
-        dcStreamDisconnect(g_dcSocket);
-        g_dcSocket = NULL;
-
-        QMessageBox messageBox;
-        messageBox.setText("Lost connection to DisplayCluster.");
-        messageBox.exec();
-
-        return false;
-    }
-
-    // open file corresponding to URI
-    QFile file(filename.c_str());
-
-    if(file.open(QIODevice::ReadOnly) != true)
-    {
-        put_flog(LOG_ERROR, "could not open file %s", filename.c_str());
-        return false;
-    }
-
-    QByteArray imageData = file.readAll();
-
-    bool success = dcStreamSendSVG(g_dcSocket, "svgStream://" + name, imageData.constData(), imageData.size());
-
-    if(success != true)
-    {
-        put_flog(LOG_ERROR, "error sending SVG stream");
-    }
-
-    return success;
-}
-#endif
