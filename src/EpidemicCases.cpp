@@ -10,7 +10,7 @@ EpidemicCases::EpidemicCases(boost::shared_ptr<EpidemicDataSet> dataSet)
     if (stratifications.size() > 0)
     {
         this->stratificationValues.push_back(1); // initial strat set to second index in Widget init
-	    for (int i=1; i < stratifications.size(); ++i)
+	    for (unsigned int i=1; i < stratifications.size(); ++i)
 	    {
             this->stratificationValues.push_back(0); // other strats set to first index (presumably)
 	    }
