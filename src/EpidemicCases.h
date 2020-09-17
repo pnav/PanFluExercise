@@ -2,6 +2,7 @@
 #define EPIDEMIC_CASES_H
 
 #include <boost/shared_ptr.hpp>
+#include <vector>
 
 class EpidemicDataSet;
 
