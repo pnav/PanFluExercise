@@ -152,8 +152,7 @@ void Parameters::loadXmlData(const std::string &filename)
 
     if(query.setFocus(QUrl(filename.c_str())) == false)
     {
-        put_flog(LOG_ERROR, "failed to load %s", filename.c_str());
-        QMessageBox::warning(NULL, "Error", "Could not load file", QMessageBox::Ok, QMessageBox::Ok);
+        put_flog(LOG_ERROR, "ERROR: failed to load %s", filename.c_str());
         return;
     }
 
