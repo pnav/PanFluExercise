@@ -3,6 +3,7 @@
 
 #include "Stockpile.h"
 #include <vector>
+#include <map>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
