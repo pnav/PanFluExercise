@@ -61,6 +61,7 @@ include_directories(${GSL_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${GSL_LIBRARIES})
 
 set(SRCS ${SRCS}
+    src/EpidemicCases.cpp
     src/EpidemicDataSet.cpp
     src/EpidemicInitialCases.cpp
     src/EpidemicSimulation.cpp
