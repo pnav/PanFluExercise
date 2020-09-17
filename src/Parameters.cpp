@@ -82,7 +82,7 @@ double Parameters::getGamma()
 
 double Parameters::getNu(int index)
 {
-    if(index >= nu_.size())
+    if(index >= (int)nu_.size())
     {
         put_flog(LOG_ERROR, "index %i out of bounds", index);
         return 0.;
@@ -338,7 +338,7 @@ void Parameters::setGamma(double value)
 
 void Parameters::setNu(int index, double value)
 {
-    if(index >= nu_.size())
+    if(index >= (int)nu_.size())
     {
         put_flog(LOG_ERROR, "index %i out of bounds", index);
         return;

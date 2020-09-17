@@ -465,7 +465,7 @@ std::string EpidemicDataSet::getVariableSummaryNodeVsTime(const std::string &var
     out << std::endl;
 
     // row for each time
-    for(unsigned t=0; t<getNumTimes(); t++)
+    for(int t=0; t<getNumTimes(); t++)
     {
         out << t;
 
@@ -520,7 +520,7 @@ std::string EpidemicDataSet::getVariableStratified2NodeVsTime(const std::string 
     // row for each time and stratification value combination
     std::vector<int> stratificationValues(2, 0);
 
-    for(unsigned t=0; t<getNumTimes(); t++)
+    for(int t=0; t<getNumTimes(); t++)
     {
         for(unsigned int s1=0; s1<stratifications[0].size(); s1++)
         {

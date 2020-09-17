@@ -127,7 +127,7 @@ std::vector<int> oneStep(std::vector<int> prevStatus, std::vector<float> start, 
 {
     std::vector<int> doesRepi;
 
-    for(int i=0; i<prevStatus.size(); i++)
+    for(unsigned int i=0; i<prevStatus.size(); i++)
     {
         doesRepi.push_back(doesReport(prevStatus[i], start[i], stop[i]));
     }
@@ -140,7 +140,7 @@ float average(std::vector<float> epi, std::vector<int> status)
     float sum = 0.;
     float counter = 0.;
 
-    for(int i=0; i<epi.size(); i++)
+    for(unsigned int i=0; i<epi.size(); i++)
     {
         int selected = iliRand.randInt(iliNoiseVector.size()-1);
 
@@ -179,7 +179,7 @@ std::vector<Provider> iliInit()
 
     std::vector<Provider> providers;
 
-    for(int i=0; i<numProviders.size(); i++)
+    for(unsigned int i=0; i<numProviders.size(); i++)
     {
         Provider provider;
         provider.starts = getProviderStartStopProbabilities(g_dataDirectory + "/ILI/providerStartProbabilities.txt", numProviders[i]);
@@ -210,7 +210,7 @@ std::vector<float> iliView(std::vector<float> epi, std::vector<float> pop, std::
 {
     std::vector<float> iliViewOut;
 
-    for(int i=0; i<epi.size(); i++)
+    for(unsigned int i=0; i<epi.size(); i++)
     {
         if(providers[i].status.size() > 0)
         {

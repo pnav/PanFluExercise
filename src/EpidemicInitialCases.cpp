@@ -129,7 +129,7 @@ void EpidemicInitialCases::loadXmlData(const std::string &filename)
 
 void EpidemicInitialCases::clearCases()
 {
-    for (int i=0; i < cases_.size(); ++i)
+    for (unsigned int i=0; i < cases_.size(); ++i)
     {
         delete cases_[i];
     }

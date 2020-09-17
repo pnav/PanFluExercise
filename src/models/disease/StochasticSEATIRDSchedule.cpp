@@ -147,6 +147,9 @@ void StochasticSEATIRDSchedule::popTopEvent()
         case ItoD:
             state_ = D;
             break;
+        case CONTACT:
+        case NONE:
+            break;
     }
 
     eventQueue_.pop();

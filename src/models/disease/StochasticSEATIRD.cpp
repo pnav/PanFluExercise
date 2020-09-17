@@ -51,7 +51,7 @@ StochasticSEATIRD::StochasticSEATIRD()
     // initialize ILI values to zero
     std::vector<float> iliValues;
 
-    for(unsigned int i=0; i<getNumNodes(); i++)
+    for(int i=0; i<getNumNodes(); i++)
     {
         iliValues.push_back(0.);
     }
@@ -449,6 +449,9 @@ bool StochasticSEATIRD::processEvent(const int &nodeId, const StochasticSEATIRDE
                 }
             }
 
+            break;
+            
+        case NONE:
             break;
     }
 
