@@ -1,46 +1,41 @@
 #ifndef STOCKPILE_H
 #define STOCKPILE_H
 
-#include <QtGui>
 #include <string>
 #include <vector>
 #include <boost/array.hpp>
 
 enum STOCKPILE_TYPE { STOCKPILE_ANTIVIRALS, STOCKPILE_VACCINES, NUM_STOCKPILE_TYPES };
 
-class Stockpile : public QObject
+class Stockpile 
 {
-    Q_OBJECT
+public:
 
-    public:
+    Stockpile(std::string name);
 
-        Stockpile(std::string name);
+    static std::string getTypeName(STOCKPILE_TYPE type);
 
-        static std::string getTypeName(STOCKPILE_TYPE type);
+    std::string getName();
 
-        std::string getName();
+    int getNum(int time, STOCKPILE_TYPE type);
 
-        int getNum(int time, STOCKPILE_TYPE type);
+    void setNodeIds(std::vector<int> nodeIds);
+    std::vector<int> getNodeIds();
 
-        void setNodeIds(std::vector<int> nodeIds);
-        std::vector<int> getNodeIds();
+    void copyToNewTimeStep();
 
-        void copyToNewTimeStep();
+    void setNum(int time, int num, STOCKPILE_TYPE type);
 
-    public slots:
+private:
 
-        void setNum(int time, int num, STOCKPILE_TYPE type);
+    // name for the stockpile
+    std::string name_;
 
-    private:
+    // number of available resource at each timestep
+    std::vector<boost::array<int, NUM_STOCKPILE_TYPES> > num_;
 
-        // name for the stockpile
-        std::string name_;
-
-        // number of available resource at each timestep
-        std::vector<boost::array<int, NUM_STOCKPILE_TYPES> > num_;
-
-        // nodeIds serviced from this stockpile
-        std::vector<int> nodeIds_;
+    // nodeIds serviced from this stockpile
+    std::vector<int> nodeIds_;
 };
 
 #endif

@@ -21,6 +21,6 @@ private:
 
     boost::shared_ptr<EpidemicDataSet> dataSet_;
     std::vector<EpidemicCases *> cases_;
-}
+};
 
 #endif

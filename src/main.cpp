@@ -1,13 +1,13 @@
 #include "main.h"
-#include "MainWindow.h"
 #include "log.h"
 #include <cstdlib>
-#include <vtkObject.h>
+#include <fstream>
 #include <boost/program_options.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include "models/disease/StochasticSEATIRD.h"
 #include "Parameters.h"
+#include "EpidemicInitialCases.h"
 
 #define BATCH_TIMESTEPS 1
 #define BATCH_INITIAL_CASES_FILENAME 2
@@ -23,7 +23,6 @@ std::string g_batchParametersFilename;
 std::string g_batchOutputVariable = "treatable";
 std::string g_batchOutputFilename = "treatable.csv";
 
-MainWindow * g_mainWindow = NULL;
 std::string g_dataDirectory;
 
 int main(int argc, char * argv[])
@@ -92,16 +91,16 @@ int main(int argc, char * argv[])
 
     if (params_found < BATCH_ALL_PARAMS)
     {
-        if (!params_found & BATCH_TIMESTEPS) put_flog(LOG_FATAL, "missing batch-numtimesteps parameter");
-        if (!params_found & BATCH_INITIAL_CASES_FILENAME) put_flog(LOG_FATAL, "missing batch-initialcasesfilename parameter");
-        if (!params_found & BATCH_PARAM_FILENAME) put_flog(LOG_FATAL, "missing batch-parametersfilename parameter");
-        if (!params_found & BATCH_OUTPUT_VAR) put_flog(LOG_FATAL, "missing batch-outputvariable parameter");
-        if (!params_found & BATCH_OUTPUT_FILENAME) put_flog(LOG_FATAL, "missing batch-outputfilename parameter");
+        if (!(params_found & BATCH_TIMESTEPS)) put_flog(LOG_FATAL, "missing batch-numtimesteps parameter");
+        if (!(params_found & BATCH_INITIAL_CASES_FILENAME)) put_flog(LOG_FATAL, "missing batch-initialcasesfilename parameter");
+        if (!(params_found & BATCH_PARAM_FILENAME)) put_flog(LOG_FATAL, "missing batch-parametersfilename parameter");
+        if (!(params_found & BATCH_OUTPUT_VAR)) put_flog(LOG_FATAL, "missing batch-outputvariable parameter");
+        if (!(params_found & BATCH_OUTPUT_FILENAME)) put_flog(LOG_FATAL, "missing batch-outputfilename parameter");
         exit(1);
     }
 
     // assumes data directory is in a sister directory to the current executable    
-    g_dataDirectory = std::string(getenv("PWD"))
+    g_dataDirectory = std::string(getenv("PWD"));
 
     put_flog(LOG_DEBUG, "data directory: %s", g_dataDirectory.c_str());
 
@@ -110,7 +109,7 @@ int main(int argc, char * argv[])
     // create a new simulation using the StochasticSEATIRD model
     boost::shared_ptr<EpidemicSimulation> simulation(new StochasticSEATIRD());
 
-    initialCases_ = new InitialCases();
+    EpidemicInitialCases *initialCases_ = new EpidemicInitialCases();
     initialCases_->setDataSet(simulation);
 
     if(g_batchInitialCasesFilename.empty() != true)

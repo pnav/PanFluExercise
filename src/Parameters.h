@@ -2,6 +2,7 @@
 #define PARAMETERS_H
 
 #include <boost/shared_ptr.hpp>
+#include <vector>
 
 class PriorityGroup;
 class Npi;

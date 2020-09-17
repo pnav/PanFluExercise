@@ -18,16 +18,13 @@ void EpidemicInitialCases::applyCases()
     {
         if(simulation->getNumTimes() == 1)
         {
-            for(unsigned int i=0; i<casesWidgets_.size(); i++)
+            for(unsigned int i=0; i<cases_.size(); i++)
             {
-                EpidemicCases cases = casesWidgets_[i]->getCases();
+                EpidemicCases cases = cases_[i]->getCases();
 
                 put_flog(LOG_DEBUG, "exposing %i people in %i", cases.num, cases.nodeId);
 
                 simulation->expose(cases.num, cases.nodeId, cases.stratificationValues);
-
-                // disable the widget
-                casesWidgets_[i]->setEnabled(false);
             }
         }
         else
