@@ -16,6 +16,20 @@ else(WIN32)
     set(CMAKE_CXX_FLAGS "-Wall")
 endif(WIN32)
 
+# find and setup Qt4
+# see http://cmake.org/cmake/help/cmake2.6docs.html#module:FindQt4 for details
+# set(QT_USE_QTOPENGL TRUE)
+# set(QT_USE_QTSVG TRUE)
+set(QT_USE_QTXMLPATTERNS TRUE)
+set(QT_USE_QTXML TRUE)
+# set(QT_USE_QTNETWORK TRUE)
+
+find_package(Qt4 REQUIRED)
+
+include(${QT_USE_FILE})
+set(LIBS ${LIBS} ${QT_LIBRARIES})
+
+
 find_package(Boost REQUIRED COMPONENTS program_options)
 include_directories(${Boost_INCLUDE_DIRS})
 set(LIBS ${LIBS} ${Boost_LIBRARIES})
