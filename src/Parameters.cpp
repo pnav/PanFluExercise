@@ -338,26 +338,17 @@ void Parameters::setGamma(double value)
 
 void Parameters::setNu(double value)
 {
-    QObject * senderObject = sender();
+    int index = senderObject->property("index").value<int>();
 
-    if(senderObject != 0)
+    if(index >= nu_.size())
     {
-        int index = senderObject->property("index").value<int>();
-
-        if(index >= nu_.size())
-        {
-            put_flog(LOG_ERROR, "index %i out of bounds", index);
-            return;
-        }
-
-        nu_[index] = value;
-
-        put_flog(LOG_DEBUG, "%i: %f", index, value);
+        put_flog(LOG_ERROR, "index %i out of bounds", index);
+        return;
     }
-    else
-    {
-        put_flog(LOG_ERROR, "should not call this method directly");
-    }
+
+    nu_[index] = value;
+
+    put_flog(LOG_DEBUG, "%i: %f", index, value);
 }
 
 void Parameters::setNu(std::vector<double> values)
