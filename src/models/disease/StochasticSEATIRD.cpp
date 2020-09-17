@@ -450,9 +450,6 @@ bool StochasticSEATIRD::processEvent(const int &nodeId, const StochasticSEATIRDE
             }
 
             break;
-            
-        case NONE:
-            break;
     }
 
     return true;
