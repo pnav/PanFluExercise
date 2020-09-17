@@ -4,6 +4,7 @@
 #include "Stockpile.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include <map>
 
 class StockpileNetwork;
 
