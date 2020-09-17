@@ -62,6 +62,7 @@ set(LIBS ${LIBS} ${GSL_LIBRARIES})
 
 set(SRCS ${SRCS}
     src/EpidemicDataSet.cpp
+    src/EpidemicInitialCases.cpp
     src/EpidemicSimulation.cpp
     src/log.cpp
     src/main.cpp
