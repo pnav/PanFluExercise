@@ -76,7 +76,7 @@ void EpidemicInitialCases::loadXmlData(const std::string &filename)
 
     if(simulation == NULL)
     {
-        put_flog(LOG_ERROR, "ERROR: No valid simulation for EpidemicInitialCases::loadXmlData")
+        put_flog(LOG_ERROR, "ERROR: No valid simulation for EpidemicInitialCases::loadXmlData");
         return;
     }
     else if(simulation->getNumTimes() != 1)
