@@ -4,14 +4,11 @@
 #include "Stockpile.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
-#include <QtGui>
 
 class StockpileNetwork;
 
-class StockpileNetworkDistribution : public QObject
+class StockpileNetworkDistribution 
 {
-    Q_OBJECT
-
     public:
 
         StockpileNetworkDistribution(int time, boost::shared_ptr<Stockpile> sourceStockpile, boost::shared_ptr<Stockpile> destinationStockpile, STOCKPILE_TYPE type, int quantity, int transferTime);
@@ -34,10 +31,6 @@ class StockpileNetworkDistribution : public QObject
         // to avoid confusion, this is why we don't have a getDestinationStockpile()...
         bool hasDestinationStockpile(boost::shared_ptr<Stockpile> stockpile);
         int getClampedQuantity(boost::shared_ptr<Stockpile> destinationStockpile);
-
-    signals:
-
-        void applied(int clampedQuanity);
 
     private:
 

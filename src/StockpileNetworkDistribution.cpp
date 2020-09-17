@@ -43,9 +43,6 @@ void StockpileNetworkDistribution::apply(int nowTime)
         // save clamped quantity
         clampedQuantity_ = clampedQuantity;
 
-        // emit signal
-        emit(applied(clampedQuantity_));
-
         // name of source
         std::string sourceName;
 
