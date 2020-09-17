@@ -336,10 +336,8 @@ void Parameters::setGamma(double value)
     put_flog(LOG_DEBUG, "%f", value);
 }
 
-void Parameters::setNu(double value)
+void Parameters::setNu(int index, double value)
 {
-    int index = senderObject->property("index").value<int>();
-
     if(index >= nu_.size())
     {
         put_flog(LOG_ERROR, "index %i out of bounds", index);

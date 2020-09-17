@@ -45,7 +45,7 @@ public:
     void setKappa(double value);
     void setChi(double value);
     void setGamma(double value);
-    void setNu(double value);
+    void setNu(int index, double value);
     void setNu(std::vector<double> values);
     void setAntiviralEffectiveness(double value);
     void setAntiviralAdherence(double value);
