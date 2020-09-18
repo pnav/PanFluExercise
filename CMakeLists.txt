@@ -20,14 +20,18 @@ endif(WIN32)
 # see http://cmake.org/cmake/help/cmake2.6docs.html#module:FindQt4 for details
 # set(QT_USE_QTOPENGL TRUE)
 # set(QT_USE_QTSVG TRUE)
-set(QT_USE_QTXMLPATTERNS TRUE)
-set(QT_USE_QTXML TRUE)
+# set(QT_USE_QTXMLPATTERNS TRUE)
+# set(QT_USE_QTXML TRUE)
 # set(QT_USE_QTNETWORK TRUE)
+# find_package(Qt4 REQUIRED)
 
-find_package(Qt4 REQUIRED)
+find_package(Qt5 COMPONENTS Core XmlPatterns REQUIRED)
 
-include(${QT_USE_FILE})
-set(LIBS ${LIBS} ${QT_LIBRARIES})
+# include(${QT_USE_FILE})
+# set(LIBS ${LIBS} ${QT_LIBRARIES})
+include_directories(${Qt5Core_INCLUDE_DIRS})
+include_directories(${Qt5XmlPatterns_INCLUDE_DIRS})
+set(LIBS ${LIBS} Qt5::Core Qt5::XmlPatterns)
 
 
 find_package(Boost REQUIRED COMPONENTS program_options)
