@@ -20,7 +20,7 @@ find_path(GSL_INCLUDE_DIR
 
 # Finally the library itself
 find_library(GSL_LIBRARY
-  NAMES gsl
+  NAMES gsl gslcblas
   PATHS ${GSL_PKGCONF_LIBRARY_DIRS}
 )
 
