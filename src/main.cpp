@@ -100,7 +100,7 @@ int main(int argc, char * argv[])
     }
 
     // assumes data directory is in a sister directory to the current executable    
-    g_dataDirectory = std::string(getenv("PWD"));
+    g_dataDirectory = std::string(getenv("PANFLU_DATA"));
 
     put_flog(LOG_DEBUG, "data directory: %s", g_dataDirectory.c_str());
 
